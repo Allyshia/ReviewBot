@@ -17,6 +17,7 @@ setup(
         ],
         'reviewbot.tools': [
             'pep8 = reviewbot.tools.pep8:pep8Tool',
+            'jslint = reviewbot.tools.jsLint:jsLintTool'
         ],
     },
     install_requires=[
