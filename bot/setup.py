@@ -11,13 +11,16 @@ setup(
     author="Steven MacLeod",
     author_email="steven@smacleod.ca",
     packages=find_packages(),
+    package_data={
+        'tools': ['lib/*.js']
+    },
     entry_points={
         'console_scripts': [
             'reviewbot = reviewbot.celery:main'
         ],
         'reviewbot.tools': [
+            'jslint = reviewbot.tools.jsLint:JSLintTool',
             'pep8 = reviewbot.tools.pep8:pep8Tool',
-            'jslint = reviewbot.tools.jsLint:JSLintTool'
         ],
     },
     install_requires=[
