@@ -113,7 +113,7 @@ class JSLintTool(Tool):
     def handle_files(self, files):
         # Get path to js script relative to current package
         PACKAGE_ROOT = os.path.abspath(os.path.dirname(__file__))
-        lib_path = os.path.join(PACKAGE_ROOT, 'lib')
+        lib_path = os.path.join(PACKAGE_ROOT, 'lib/jslint')
         self.runJSLint_path = os.path.join(lib_path, 'runJSLint.js')
         self.jsLint_path = os.path.join(lib_path, 'jslint.js')
 
