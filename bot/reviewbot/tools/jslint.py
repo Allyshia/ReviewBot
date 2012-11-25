@@ -1,7 +1,8 @@
 import os
+import json
 
-from reviewbot.tools.process import execute
 from reviewbot.tools import Tool
+from reviewbot.tools.process import execute
 
 class JSLintTool(Tool):
     name = 'JSLint Code Quality Tool'
@@ -71,7 +72,7 @@ class JSLintTool(Tool):
         {
             'name': 'maxlen',
             'field_type': 'django.forms.IntegerField',
-            'default': 79,
+            'default': 80,
             'field_options': {
                 'label': 'Maximum Line Length',
                 'help_text': 'Maximum source line length allowed',
@@ -113,19 +114,19 @@ class JSLintTool(Tool):
     def handle_files(self, files):
         # Get path to js script relative to current package
         PACKAGE_ROOT = os.path.abspath(os.path.dirname(__file__))
-        lib_path = os.path.join(PACKAGE_ROOT, 'lib/jslint')
-        self.runJSLint_path = os.path.join(lib_path, 'runJSLint.js')
-        self.jsLint_path = os.path.join(lib_path, 'jslint.js')
+        LIB_PATH = os.path.join(PACKAGE_ROOT, 'lib/jslint')
+        self.runJSLint_path = os.path.join(LIB_PATH, 'runJSLint.js')
+        self.jsLint_path = os.path.join(LIB_PATH, 'jslint.js')
 
         # Get JSLint options from admin panel ...
         settings_bool_keys = ['debug', 'devel', 'es5', 'evil', 'passfail',
-            'sloppy','white']
+                              'sloppy','white']
 
         settings_num_keys = ['indent', 'maxerr', 'maxlen']
 
         # ... first set the boolean values ...
-        self.jsLintOptions = dict((s, str(self.settings[s]).lower())
-                                for s in settings_bool_keys)
+        self.jsLintOptions = dict((s, self.settings[s])
+                                  for s in settings_bool_keys)
         
         # ... then the numeric values.
         for s in settings_num_keys:
@@ -141,13 +142,14 @@ class JSLintTool(Tool):
         path = f.get_patched_file_path()
         if not path:
             return False
+
         output = execute(
             [
                 'js',
                 '-e',
                 "load('%s'); runJSLint('%s', read('%s'), %s);"
                     % (self.runJSLint_path, self.jsLint_path, path,
-                        self.jsLintOptions)
+                       json.dumps(self.jsLintOptions))
             ],
             split_lines=True,
             ignore_errors=True)
@@ -156,13 +158,21 @@ class JSLintTool(Tool):
             try:
                 parsed = line.split(':')
                 lnum = int(parsed[0])
-                col = int(parsed[1])
-                msg = parsed[2]
-                f.comment('Col: %s\n%s' % (col, msg), lnum)
+                if (lnum == -1):
+                    # Custom message : post in review body_top
+                    msg = parsed[1]
+                    f.review.body_top = "%s\n%s" % (f.review.body_top, msg)
+                else:
+                    # Comment on a line : at least one error found by jslint
+                    col = int(parsed[1])
+                    msg = parsed[2]
+                    f.comment('Col: %s\n%s' % (col, msg), lnum)
             except ValueError:
                 # A non-numeral was given in the output; don't use it.
                 # There was likely an error in processing the .js file.
-                return False
-            except:
+                # TODO : properly display an error message to the user saying
+                #  there was an error processing the file. Also display success
+                #  message if there were no errors found by this tool at all
+                #  (ie no comments on the review).
                 return False
         return True
