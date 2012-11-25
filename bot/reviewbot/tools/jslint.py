@@ -157,16 +157,11 @@ class JSLintTool(Tool):
         for line in output:
             try:
                 parsed = line.split(':')
+                # Comment on a line : at least one error found by jslint
                 lnum = int(parsed[0])
-                if (lnum == -1):
-                    # Custom message : post in review body_top
-                    msg = parsed[1]
-                    f.review.body_top = "%s\n%s" % (f.review.body_top, msg)
-                else:
-                    # Comment on a line : at least one error found by jslint
-                    col = int(parsed[1])
-                    msg = parsed[2]
-                    f.comment('Col: %s\n%s' % (col, msg), lnum)
+                col = int(parsed[1])
+                msg = parsed[2]
+                f.comment('Col: %s\n%s' % (col, msg), lnum)
             except ValueError:
                 # A non-numeral was given in the output; don't use it.
                 # There was likely an error in processing the .js file.
