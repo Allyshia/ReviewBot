@@ -8,11 +8,13 @@ from django.utils.importlib import import_module
 from celery import Celery
 from djblets.siteconfig.models import SiteConfiguration
 from reviewboard.extensions.base import Extension
+from reviewboard.extensions.hooks import ReviewRequestActionHook
 
 from reviewbotext.handlers import SignalHandlers
 from reviewbotext.models import ReviewBotTool
 from reviewbotext.resources import review_bot_review_resource, \
-                                   review_bot_tool_resource
+                                   review_bot_tool_resource, \
+                                   review_bot_installed_tool_resource
 
 
 class ReviewBotExtension(Extension):
@@ -29,6 +31,7 @@ class ReviewBotExtension(Extension):
     resources = [
         review_bot_review_resource,
         review_bot_tool_resource,
+        review_bot_installed_tool_resource,
     ]
 
     def __init__(self, *args, **kwargs):
@@ -36,6 +39,15 @@ class ReviewBotExtension(Extension):
         self.settings.load()
         self.celery = Celery('reviewbot.tasks')
         self.signal_handlers = SignalHandlers(self)
+        self.add_hook()
+
+    def add_hook(self):
+        actions = [{
+            'id': 'reviewbot-link',
+            'label': 'Review Bot',
+            'url' : '#'
+        }]
+        self.action_hook = ReviewRequestActionHook(self, actions=actions)
 
     def shutdown(self):
         self.signal_handlers.disconnect()

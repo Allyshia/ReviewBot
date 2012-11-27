@@ -7,6 +7,7 @@ from djblets.webapi.decorators import webapi_login_required, \
                                       webapi_request_fields
 from djblets.webapi.errors import DOES_NOT_EXIST, INVALID_FORM_DATA, \
                                   NOT_LOGGED_IN, PERMISSION_DENIED
+from djblets.webapi.resources import register_resource_for_model
 
 from reviewboard.diffviewer.models import FileDiff
 from reviewboard.reviews.models import BaseComment, Review
@@ -213,3 +214,40 @@ class ReviewBotToolResource(WebAPIResource):
         return 201, {}
 
 review_bot_tool_resource = ReviewBotToolResource()
+
+class ReviewBotInstalledToolResource(WebAPIResource):
+    """Provides information on review requests."""
+    model = ReviewBotTool
+    name = 'tool'
+    model_object_key = 'id'
+    uri_object_key = 'id'
+    fields = {
+        'id': {
+            'type': int,
+            'description': 'The id of the tool.',
+        },
+        'name': {
+            'type': str,
+            'description': 'The name of the tool.',
+        },
+        'enabled': {
+            'type': bool,
+            'description': 'Whether the user has enabled this '
+                           'tool in the Review Bot extension.',
+        },
+        'run_automatically': {
+            'type': bool,
+            'description': 'Whether the user has enabled this tool to '
+                           'run automatically.',
+        },
+        'allow_run_manually': {
+            'type': bool,
+            'description': 'Whether the user has enabled this tool to '
+                           'be triggered manually.',
+        },
+    }
+    
+    allowed_methods = ('GET',)
+
+review_bot_installed_tool_resource = ReviewBotInstalledToolResource()
+register_resource_for_model(ReviewBotTool, review_bot_installed_tool_resource)
