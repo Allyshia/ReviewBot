@@ -8,7 +8,8 @@ from django.utils.importlib import import_module
 from celery import Celery
 from djblets.siteconfig.models import SiteConfiguration
 from reviewboard.extensions.base import Extension
-from reviewboard.extensions.hooks import ReviewRequestActionHook
+from reviewboard.extensions.hooks import ReviewRequestActionHook, \
+                                         TemplateHook
 
 from reviewbotext.handlers import SignalHandlers
 from reviewbotext.models import ReviewBotTool
@@ -40,9 +41,10 @@ class ReviewBotExtension(Extension):
         self.settings.load()
         self.celery = Celery('reviewbot.tasks')
         self.signal_handlers = SignalHandlers(self)
-        self.add_hook()
+        self.add_action_hook()
+        self.template_hook = TemplateHook(self, 'base-scripts-post', 'reviewbot_hook_action.html')
 
-    def add_hook(self):
+    def add_action_hook(self):
         actions = [{
             'id': 'reviewbot-link',
             'label': 'Review Bot',
