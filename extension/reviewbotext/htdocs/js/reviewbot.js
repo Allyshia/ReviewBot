@@ -25,8 +25,8 @@ $.fetchReviewBotTools = function() {
 
 $.createToolLightBox = function() {
     modal = {
-            title: "Review Bot",
-        };
+        title: "Review Bot",
+    };
     dlg = $("<div/>")
         .attr("id", "reviewbot-tool-dialog")
         .attr("class", "modalbox-contents")
