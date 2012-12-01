@@ -1,5 +1,9 @@
 // Trigger the ReviewBot tools lightbox when clicking on the ReviewBot link
 //  in the nav bar.
+
+var dlg;
+var modal;
+
 $("#reviewbot-link").click(function() {
     $.fetchReviewBotTools();
 });
@@ -11,33 +15,41 @@ $.fetchReviewBotTools = function() {
         data: {},
         url: "/api/extensions/reviewbotext.extension.ReviewBotExtension/tools/",
         success: function(response) {
-           $.showToolLightBox(response); 
+            if(!dlg){
+                $.createToolLightBox();
+            }
+            $.showToolLightBox(response); 
         }
     });
 }
 
-var dlg;
-
-$.showToolLightBox = function(response){
-    var tools = response["tools"];
-    var modal = {
+$.createToolLightBox = function() {
+    modal = {
             title: "Review Bot",
         };
-    //TODO : only create dialog once and clear its contents before popping up?
     dlg = $("<div/>")
         .attr("id", "reviewbot-tool-dialog")
+        .attr("class", "modalbox-contents")
         .appendTo("body")
-        .html($("<div/>").attr("id", "dialogContent").attr("class", "modalbox-contents"))
-        .trigger("ready");
-   
+}
+
+$.showToolLightBox = function(response) {
+    var tools = response["tools"];
     var toolList = $("<ul/>").attr("style", "list-style:none;")
+
     $.each(tools, function(index, tool){
         if(tool["enabled"] && tool["allow_run_manually"]){
             toolList.append(
                 ($("<li/>")
-                    .append($("<input/>")
+                    .append($('<input type="checkbox"/>')
                         .attr("id", "checkbox_"+index)
-                        .attr("type", "checkbox"))
+                        .attr("class", "toolCheckbox")
+                        .attr("checked", "checked")
+                        .change(function() {
+                            var allChecked = 
+                                ($(".toolCheckbox:checked").length > 0);
+                            $("#button_run").attr("disabled", !allChecked);
+                        }))
                     .append($("<label/>")
                         .attr("for", "checkbox_"+index)
                         .html(tool["name"]))
@@ -45,23 +57,25 @@ $.showToolLightBox = function(response){
             );
         }
     });
-    
+
     if(toolList.children().length > 0) {
-        $("#dialogContent").html("Installed tools:").append(toolList);
+        dlg
+            .text("Installed tools:")
+            .append(toolList);
         modal.buttons = [
-                $('<input type="button" value="Cancel"/>'),
-                $('<input type="button"/>')
-                    .val("Run Tools")
-                    .click(function(e){
-                        // run tool
-                    }),
-            ]
+            $('<input id="button_cancel" type="button" value="Cancel"/>'),
+            $('<input id="button_run" type="button"/>')
+                .val("Run Tools")
+                .click(function(e){
+                    // run tool
+                }),
+        ];
     } else {
         // if no tools were loaded, display message
-        $("#dialogContent").html("No tools installed.");
+        dlg.text("No tools installed.");
         modal.buttons = [
-                $('<input type="button" value="OK"/>'),
-            ]
+            $('<input id="button_ok" type="button" value="OK"/>'),
+        ];
     }
 
     dlg.modalBox(modal);
