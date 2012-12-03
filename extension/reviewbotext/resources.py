@@ -7,7 +7,6 @@ from djblets.webapi.decorators import webapi_login_required, \
                                       webapi_request_fields
 from djblets.webapi.errors import DOES_NOT_EXIST, INVALID_FORM_DATA, \
                                   NOT_LOGGED_IN, PERMISSION_DENIED
-from djblets.webapi.resources import register_resource_for_model
 
 from reviewboard.diffviewer.models import FileDiff
 from reviewboard.reviews.models import BaseComment, Review
@@ -214,13 +213,14 @@ review_bot_tool_resource = ReviewBotToolResource()
 
 class ReviewBotInstalledToolResource(WebAPIResource):
     """Provides information on the installed Review Bot tools.
+    
     This can be used to fetch the list of installed tools to be displayed
     in the Review Board UI.
     """
     model = ReviewBotTool
     name = 'tool'
     model_object_key = 'id'
-    uri_object_key = 'id'
+    uri_object_key = 'reviewbot_tool_id'
     fields = {
         'id': {
             'type': int,
@@ -229,6 +229,10 @@ class ReviewBotInstalledToolResource(WebAPIResource):
         'name': {
             'type': str,
             'description': 'The name of the tool.',
+        },
+        'version': {
+            'type': str,
+            'description': 'The tool version number.',
         },
         'enabled': {
             'type': bool,
@@ -250,4 +254,3 @@ class ReviewBotInstalledToolResource(WebAPIResource):
     allowed_methods = ('GET',)
 
 review_bot_installed_tool_resource = ReviewBotInstalledToolResource()
-register_resource_for_model(ReviewBotTool, review_bot_installed_tool_resource)

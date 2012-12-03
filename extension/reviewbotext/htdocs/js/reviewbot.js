@@ -50,7 +50,7 @@ $.createToolLightBox = function() {
      * Add all new content to the dialog here. 
      */
 
-    // Content of Installed Tools generated dynamically later on.
+    // Content of Installed Tools generated dynamically later.
     $.addSection("reviewbot-installed-tools", "Installed Tools");
 }
 
@@ -86,7 +86,7 @@ $.showToolLightBox = function(response) {
             toolList.append(
                 ($("<li/>")
                     .append($('<input type="checkbox"/>')
-                        .attr("id", "checkbox_"+index)
+                        .attr("id", "reviewbot-tool-checkbox_"+index)
                         .attr("class", "toolCheckbox")
                         .attr("checked", "checked")
                         .change(function() {
@@ -95,8 +95,8 @@ $.showToolLightBox = function(response) {
                             $("#button_run").attr("disabled", !allChecked);
                         }))
                     .append($("<label/>")
-                        .attr("for", "checkbox_"+index)
-                        .html(tool["name"]))
+                        .attr("for", "reviewbot-tool-checkbox_"+index)
+                        .html(tool["name"] + " " + tool["version"]))
                 )
             );
         }
