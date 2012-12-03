@@ -1,7 +1,7 @@
 // Trigger the ReviewBot tools lightbox when clicking on the ReviewBot link
 //  in the nav bar.
 
-var dlg;
+var dlg, dlgContentTable, dlgContentTBody;
 var modal;
 
 $("#reviewbot-link").click(function() {
@@ -27,15 +27,59 @@ $.createToolLightBox = function() {
     modal = {
         title: "Review Bot",
     };
+
     dlg = $("<div/>")
         .attr("id", "reviewbot-tool-dialog")
         .attr("class", "modalbox-contents")
         .appendTo("body")
+
+    dlg.append(
+        $("<p/>")
+            .attr("id", "reviewbot-tool-description")
+            .html("Select the static analysis tools you would like to run."));
+
+    dlgContentTable = $("<table/>")
+        .appendTo(dlg)
+        .append($("<colgroup/>")
+            .append('<col/>'));
+                          
+    dlgContentTBody = $("<tbody/>")
+        .appendTo(dlgContentTable);
+
+    /*
+     * Add all new content to the dialog here. 
+     */
+
+    // Content of Installed Tools generated dynamically later on.
+    $.addSection("reviewbot-installed-tools", "Installed Tools");
+}
+
+/*
+ * Add a section to the Review Bot tools dialog.
+ *
+ * Content to the section can be added elsewhere using the content_id.
+ */
+$.addSection = function(content_id, subtitle) {
+    dlgContentTBody
+        .append($("<tr/>")
+            .append(
+                $("<td/>")
+                    .html(
+                        $("<span class='reviewbot-tool-dialog-subtitle'/>")
+                            .html(subtitle))))
+        .append($("<tr/>")
+            .append(
+                $("<td/>")
+                    .html($("<div/>")
+                        .attr("id", content_id))));
 }
 
 $.showToolLightBox = function(response) {
+    // Display list of installed tools.
+    // Later on more data can be handled and displayed here.
     var tools = response["tools"];
-    var toolList = $("<ul/>").attr("style", "list-style:none;")
+    var toolList = $("<ul/>")
+        .attr("id", "reviewbot-tool-list");
 
     $.each(tools, function(index, tool){
         if(tool["enabled"] && tool["allow_run_manually"]){
@@ -58,10 +102,12 @@ $.showToolLightBox = function(response) {
         }
     });
 
-    if(toolList.children().length > 0) {
-        dlg
-            .text("Installed tools:")
-            .append(toolList);
+    // Re-append dlg to body since closing the modalbox removes it.
+    dlg.appendTo("body");
+
+    if (toolList.children().length > 0) {
+        $("#reviewbot-installed-tools").html(toolList);
+        
         modal.buttons = [
             $('<input id="button_cancel" type="button" value="Cancel"/>'),
             $('<input id="button_run" type="button"/>')
@@ -71,12 +117,13 @@ $.showToolLightBox = function(response) {
                 }),
         ];
     } else {
-        // if no tools were loaded, display message
-        dlg.text("No tools installed.");
+        // If no tools were loaded, display message.
+        $("#reviewbot-installed-tools")
+            .html("No tools available to run manually.");
+            
         modal.buttons = [
             $('<input id="button_ok" type="button" value="OK"/>'),
         ];
     }
-
     dlg.modalBox(modal);
 }
