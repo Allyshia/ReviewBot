@@ -1,8 +1,7 @@
 // Trigger the ReviewBot tools lightbox when clicking on the ReviewBot link
 //  in the nav bar.
 
-var dlg, dlgContentTable, dlgContentTBody;
-var modal;
+var dlg, dlgContentTable, dlgContentTBody, modal;
 
 $("#reviewbot-link").click(function() {
     $.fetchReviewBotTools();
@@ -15,7 +14,7 @@ $.fetchReviewBotTools = function() {
         data: {},
         url: "/api/extensions/reviewbotext.extension.ReviewBotExtension/tools/",
         success: function(response) {
-            if(!dlg){
+            if (!dlg) {
                 $.createToolLightBox();
             }
             $.showToolLightBox(response); 
@@ -82,11 +81,11 @@ $.showToolLightBox = function(response) {
         .attr("id", "reviewbot-tool-list");
 
     $.each(tools, function(index, tool){
-        if(tool["enabled"] && tool["allow_run_manually"]){
+        if (tool["enabled"] && tool["allow_run_manually"]) {
             toolList.append(
-                ($("<li/>")
+                $("<li/>")
                     .append($('<input type="checkbox"/>')
-                        .attr("id", "reviewbot-tool-checkbox_"+index)
+                        .attr("id", "reviewbot-tool-checkbox_" + index)
                         .attr("class", "toolCheckbox")
                         .attr("checked", "checked")
                         .change(function() {
@@ -95,9 +94,8 @@ $.showToolLightBox = function(response) {
                             $("#button_run").attr("disabled", !allChecked);
                         }))
                     .append($("<label/>")
-                        .attr("for", "reviewbot-tool-checkbox_"+index)
+                        .attr("for", "reviewbot-tool-checkbox_" + index)
                         .html(tool["name"] + " " + tool["version"]))
-                )
             );
         }
     });
