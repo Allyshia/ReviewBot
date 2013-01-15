@@ -137,7 +137,7 @@ class ReviewBotToolResource(WebAPIResource):
     Also provides information on the installed Review Bot tools. This can be
     used to fetch the list of installed tools to be displayed in the Review
     Board UI.
-    
+
     """
     name = 'review_bot_tool'
     allowed_methods = ('GET', 'POST',)
