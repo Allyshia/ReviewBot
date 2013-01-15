@@ -132,9 +132,47 @@ review_bot_review_resource = ReviewBotReviewResource()
 
 
 class ReviewBotToolResource(WebAPIResource):
-    """Resource for workers to update the installed tools list."""
+    """Resource for workers to update the installed tools list.
+
+    Also provides information on the installed Review Bot tools. This can be
+    used to fetch the list of installed tools to be displayed in the Review
+    Board UI.
+    
+    """
     name = 'review_bot_tool'
     allowed_methods = ('GET', 'POST',)
+    model = ReviewBotTool
+    model_object_key = 'id'
+    uri_object_key = 'reviewbot_tool_id'
+    fields = {
+        'id': {
+            'type': int,
+            'description': 'The id of the tool.',
+        },
+        'name': {
+            'type': str,
+            'description': 'The name of the tool.',
+        },
+        'version': {
+            'type': str,
+            'description': 'The tool version number.',
+        },
+        'enabled': {
+            'type': bool,
+            'description': 'Whether the user has enabled this '
+                           'tool in the Review Bot extension.',
+        },
+        'run_automatically': {
+            'type': bool,
+            'description': 'Whether the user has enabled this tool to '
+                           'run automatically.',
+        },
+        'allow_run_manually': {
+            'type': bool,
+            'description': 'Whether the user has enabled this tool to '
+                           'be triggered manually.',
+        },
+    }
 
     @webapi_check_local_site
     @webapi_login_required
@@ -210,47 +248,3 @@ class ReviewBotToolResource(WebAPIResource):
         return 201, {}
 
 review_bot_tool_resource = ReviewBotToolResource()
-
-class ReviewBotInstalledToolResource(WebAPIResource):
-    """Provides information on the installed Review Bot tools.
-    
-    This can be used to fetch the list of installed tools to be displayed
-    in the Review Board UI.
-    """
-    model = ReviewBotTool
-    name = 'tool'
-    model_object_key = 'id'
-    uri_object_key = 'reviewbot_tool_id'
-    fields = {
-        'id': {
-            'type': int,
-            'description': 'The id of the tool.',
-        },
-        'name': {
-            'type': str,
-            'description': 'The name of the tool.',
-        },
-        'version': {
-            'type': str,
-            'description': 'The tool version number.',
-        },
-        'enabled': {
-            'type': bool,
-            'description': 'Whether the user has enabled this '
-                           'tool in the Review Bot extension.',
-        },
-        'run_automatically': {
-            'type': bool,
-            'description': 'Whether the user has enabled this tool to '
-                           'run automatically.',
-        },
-        'allow_run_manually': {
-            'type': bool,
-            'description': 'Whether the user has enabled this tool to '
-                           'be triggered manually.',
-        },
-    }
-    
-    allowed_methods = ('GET',)
-
-review_bot_installed_tool_resource = ReviewBotInstalledToolResource()

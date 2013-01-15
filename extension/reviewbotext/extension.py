@@ -16,8 +16,7 @@ from reviewboard.extensions.hooks import DiffViewerActionHook, \
 
 from reviewbotext.handlers import SignalHandlers
 from reviewbotext.models import ReviewBotTool
-from reviewbotext.resources import review_bot_installed_tool_resource, \
-                                   review_bot_review_resource, \
+from reviewbotext.resources import review_bot_review_resource, \
                                    review_bot_tool_resource
 
 
@@ -34,7 +33,6 @@ class ReviewBotExtension(Extension):
         'max_comments': 30,
     }
     resources = [
-        review_bot_installed_tool_resource,
         review_bot_review_resource,
         review_bot_tool_resource,
     ]
@@ -45,7 +43,7 @@ class ReviewBotExtension(Extension):
         self.celery = Celery('reviewbot.tasks')
         self.signal_handlers = SignalHandlers(self)
         register_resource_for_model(ReviewBotTool,
-                                    review_bot_installed_tool_resource)
+                                    review_bot_tool_resource)
         self.add_action_hooks()
         self.template_hook = TemplateHook(self,
                                           'base-scripts-post',
@@ -55,7 +53,7 @@ class ReviewBotExtension(Extension):
         actions = [{
             'id': 'reviewbot-link',
             'label': 'Review Bot',
-            'url' : '#'
+            'url': '#'
         }]
         self.review_action_hook = ReviewRequestActionHook(self, actions=actions)
         self.diff_action_hook = DiffViewerActionHook(self, actions=actions)

@@ -12,7 +12,7 @@ $.fetchReviewBotTools = function() {
         type: "GET",
         dataType: "json",
         data: {},
-        url: "/api/extensions/reviewbotext.extension.ReviewBotExtension/tools/",
+        url: "/api/extensions/reviewbotext.extension.ReviewBotExtension/review-bot-tools/",
         success: function(response) {
             if (!dlg) {
                 $.createToolLightBox();
@@ -76,7 +76,7 @@ $.addSection = function(content_id, subtitle) {
 $.showToolLightBox = function(response) {
     // Display list of installed tools.
     // Later on more data can be handled and displayed here.
-    var tools = response["tools"];
+    var tools = response["review_bot_tools"];
     var toolList = $("<ul/>")
         .attr("id", "reviewbot-tool-list");
 
