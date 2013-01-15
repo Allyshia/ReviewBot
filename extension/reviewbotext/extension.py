@@ -54,7 +54,8 @@ class ReviewBotExtension(Extension):
             'label': 'Review Bot',
             'url': '#'
         }]
-        self.review_action_hook = ReviewRequestActionHook(self, actions=actions)
+        self.review_action_hook = ReviewRequestActionHook(self,
+                                                          actions=actions)
         self.diff_action_hook = DiffViewerActionHook(self, actions=actions)
 
     def shutdown(self):

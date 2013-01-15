@@ -17,7 +17,7 @@ $.fetchReviewBotTools = function() {
             if (!dlg) {
                 $.createToolLightBox();
             }
-            $.showToolLightBox(response); 
+            $.showToolLightBox(response);
         }
     });
 }
@@ -41,12 +41,12 @@ $.createToolLightBox = function() {
         .appendTo(dlg)
         .append($("<colgroup/>")
             .append('<col/>'));
-                          
+
     dlgContentTBody = $("<tbody/>")
         .appendTo(dlgContentTable);
 
     /*
-     * Add all new content to the dialog here. 
+     * Add all new content to the dialog here.
      */
 
     // Content of Installed Tools generated dynamically later.
@@ -89,7 +89,7 @@ $.showToolLightBox = function(response) {
                         .attr("class", "toolCheckbox")
                         .attr("checked", "checked")
                         .change(function() {
-                            var allChecked = 
+                            var allChecked =
                                 ($(".toolCheckbox:checked").length > 0);
                             $("#button_run").attr("disabled", !allChecked);
                         }))
@@ -105,7 +105,7 @@ $.showToolLightBox = function(response) {
 
     if (toolList.children().length > 0) {
         $("#reviewbot-installed-tools").html(toolList);
-        
+
         modal.buttons = [
             $('<input id="button_cancel" type="button" value="Cancel"/>'),
             $('<input id="button_run" type="button"/>')
@@ -118,7 +118,7 @@ $.showToolLightBox = function(response) {
         // If no tools were loaded, display message.
         $("#reviewbot-installed-tools")
             .html("No tools available to run manually.");
-            
+
         modal.buttons = [
             $('<input id="button_ok" type="button" value="OK"/>'),
         ];
