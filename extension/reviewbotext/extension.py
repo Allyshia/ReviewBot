@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.auth import login
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest
 from django.utils.importlib import import_module
 
@@ -81,8 +82,20 @@ class ReviewBotExtension(Extension):
             'url': self._rb_url(),
         }
 
-        tools = ReviewBotTool.objects.filter(enabled=True,
-                                             run_automatically=True)
+        if (selected_tools is not None):
+            tools = []
+            for tool in selected_tools:
+            # Double-check that the tool can be run manually in case
+            # this setting was changed between trigger time and queue time.
+                try:
+                    tools.append(
+                        ReviewBotTool.objects.get(id=tool['id'],
+                                                  allow_run_manually=True))
+                except ObjectDoesNotExist:
+                    pass
+        else:
+            tools = ReviewBotTool.objects.filter(enabled=True,
+                                                 run_automatically=True)
 
         for tool in tools:
             review_settings['ship_it'] = tool.ship_it

@@ -288,21 +288,19 @@ class ReviewBotTriggerReviewResource(WebAPIResource):
 
         except:
             return INVALID_FORM_DATA, {
-                    'fields': {
-                        'dtools': 'Malformed JSON.',
-                    },
-                }
+                'fields': {
+                    'dtools': 'Malformed JSON.',
+                },
+            }
 
         # Get the ReviewBotExtension instance. We can assume it exists because
         # this code is executed after the extension has been registered with
         # the manager.
         from reviewbotext.extension import ReviewBotExtension
         extension_manager = get_extension_manager()
-        extension = extension_manager.get_enabled_extension(ReviewBotExtension.id)
-
-
+        extension = \
+            extension_manager.get_enabled_extension(ReviewBotExtension.id)
         review_request = ReviewRequest.objects.get(id=review_request_id)
-
         is_new = True
         fields_changed = {}
 
@@ -310,7 +308,7 @@ class ReviewBotTriggerReviewResource(WebAPIResource):
         diffsets = review_request.diffset_history.diffsets.get_query_set()
         if len(diffsets) > 0:
             has_diff = True
-            diff_revision = diffsets[0].revision
+            diff_revision = diffsets[len(diffsets)-1].revision
         else:
             has_diff = False
 
@@ -322,10 +320,8 @@ class ReviewBotTriggerReviewResource(WebAPIResource):
         }
 
         if has_diff:
-            request_payload['diff_revision'] = 5 #DEBUG diff_revision
-        #Creating a line that is definitely too long in resources.py so that it will get picked up by PEP8 in the second revision of the diff.
-        #Creating a nother line that is too long because I want to see whether the manual trigger will pick up this new
-        # Yet a third long line to see whether a new published diff will have comments on all three lines or just hte latest one in the latest review triggered manually. Should maybe repeat with auto trigger.
+            request_payload['diff_revision'] = diff_revision
+        
         extension.notify(request_payload, tools) 
         
         # TODO: Fix the result key here.
