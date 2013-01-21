@@ -88,6 +88,7 @@ $.showToolLightBox = function(response) {
                         .attr("id", "reviewbot-tool-checkbox_" + index)
                         .attr("class", "toolCheckbox")
                         .attr("checked", "checked")
+                        .prop("tool_id", tool["id"])
                         .change(function() {
                             var allChecked =
                                 ($(".toolCheckbox:checked").length > 0);
@@ -111,7 +112,7 @@ $.showToolLightBox = function(response) {
             $('<input id="button_run" type="button"/>')
                 .val("Run Tools")
                 .click(function(e){
-                    // run tool
+                    $.runSelectedTools($(".toolCheckbox:checked"));
                 }),
         ];
     } else {
@@ -124,4 +125,29 @@ $.showToolLightBox = function(response) {
         ];
     }
     dlg.modalBox(modal);
+}
+
+$.runSelectedTools = function(selectedTools){
+    var tools = [];
+
+    $.each(selectedTools, function(index, selectedTool){
+        tools.push(
+            { id : $(selectedTool).prop("tool_id") }
+        );
+    });
+
+    request_payload = {
+        review_request_id: gReviewRequestId,
+        tools : JSON.stringify(tools),
+    }
+
+    RB.apiCall({
+        type: "POST",
+        dataType: "json",
+        data: request_payload,
+        url: "/api/extensions/reviewbotext.extension.ReviewBotExtension/review-bot-trigger-reviews/",
+        success: function(response) {
+            alert(response);
+        }
+    });
 }

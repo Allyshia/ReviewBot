@@ -17,7 +17,8 @@ from reviewboard.extensions.hooks import DiffViewerActionHook, \
 from reviewbotext.handlers import SignalHandlers
 from reviewbotext.models import ReviewBotTool
 from reviewbotext.resources import review_bot_review_resource, \
-                                   review_bot_tool_resource
+                                   review_bot_tool_resource, \
+                                   review_bot_trigger_review_resource
 
 
 class ReviewBotExtension(Extension):
@@ -35,6 +36,7 @@ class ReviewBotExtension(Extension):
     resources = [
         review_bot_review_resource,
         review_bot_tool_resource,
+        review_bot_trigger_review_resource,
     ]
 
     def __init__(self, *args, **kwargs):
@@ -63,9 +65,10 @@ class ReviewBotExtension(Extension):
         self.signal_handlers.disconnect()
         unregister_resource_for_model(ReviewBotTool)
         super(ReviewBotExtension, self).shutdown()
-
-    def notify(self, request_payload):
+    
+    def notify(self, request_payload, selected_tools=None):
         """Add the request to the queue."""
+
         self.celery.conf.BROKER_URL = self.settings['BROKER_URL']
 
         review_settings = {
@@ -77,6 +80,7 @@ class ReviewBotExtension(Extension):
             'session': self._login_user(self.settings['user']),
             'url': self._rb_url(),
         }
+
         tools = ReviewBotTool.objects.filter(enabled=True,
                                              run_automatically=True)
 

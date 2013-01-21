@@ -1,8 +1,13 @@
 from reviewboard.reviews.signals import review_request_published
 
+from reviewbotext.extension import review_bot_extension_utils
+from reviewbotext.reviews.signals import review_request_published
+
 
 class SignalHandlers(object):
-    """Signal handlers for reviewboard signals."""
+    """
+    Signal handlers for reviewboard signals.
+    """
 
     def __init__(self, extension):
         """Initialize and connect all the signals"""
@@ -54,4 +59,6 @@ class SignalHandlers(object):
 
         if has_diff:
             request_payload['diff_revision'] = diff_revision
-            self.extension.notify(request_payload)
+
+        #self.extension.notify(request_payload)
+        review_bot_extension_utils.notify(request_payload)
