@@ -320,9 +320,9 @@ class ReviewBotTriggerReviewResource(WebAPIResource):
 
         if has_diff:
             request_payload['diff_revision'] = diff_revision
-        
-        extension.notify(request_payload, tools) 
-        
+
+        extension.notify(request_payload, tools)
+
         # TODO: Fix the result key here.
         return 201, {}
 
