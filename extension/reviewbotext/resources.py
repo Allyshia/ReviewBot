@@ -285,7 +285,6 @@ class ReviewBotTriggerReviewResource(WebAPIResource):
         """
         try:
             tools = json.loads(tools)
-            #DEBUG - test data
 
         except:
             return INVALID_FORM_DATA, {
@@ -325,7 +324,8 @@ class ReviewBotTriggerReviewResource(WebAPIResource):
         if has_diff:
             request_payload['diff_revision'] = diff_revision
         #Creating a line that is definitely too long in resources.py so that it will get picked up by PEP8 in the second revision of the diff.
-        extension.notify(request_payload) 
+        #Creating a nother line that is too long because I want to see whether the manual trigger will pick up this new change.
+        extension.notify(request_payload, tools) 
         
         # TODO: Fix the result key here.
         return 201, {}
