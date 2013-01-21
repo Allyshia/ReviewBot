@@ -322,9 +322,10 @@ class ReviewBotTriggerReviewResource(WebAPIResource):
         }
 
         if has_diff:
-            request_payload['diff_revision'] = diff_revision
+            request_payload['diff_revision'] = 5 #DEBUG diff_revision
         #Creating a line that is definitely too long in resources.py so that it will get picked up by PEP8 in the second revision of the diff.
-        #Creating a nother line that is too long because I want to see whether the manual trigger will pick up this new change.
+        #Creating a nother line that is too long because I want to see whether the manual trigger will pick up this new
+        # Yet a third long line to see whether a new published diff will have comments on all three lines or just hte latest one in the latest review triggered manually. Should maybe repeat with auto trigger.
         extension.notify(request_payload, tools) 
         
         # TODO: Fix the result key here.
