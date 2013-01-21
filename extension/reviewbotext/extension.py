@@ -66,7 +66,7 @@ class ReviewBotExtension(Extension):
         self.signal_handlers.disconnect()
         unregister_resource_for_model(ReviewBotTool)
         super(ReviewBotExtension, self).shutdown()
-    
+
     def notify(self, request_payload, selected_tools=None):
         """Add the request to the queue."""
 

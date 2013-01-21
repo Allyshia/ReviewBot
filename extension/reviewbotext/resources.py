@@ -10,8 +10,7 @@ from djblets.webapi.errors import DOES_NOT_EXIST, INVALID_FORM_DATA, \
 
 from reviewboard.diffviewer.models import FileDiff
 from reviewboard.extensions.base import get_extension_manager
-from reviewboard.reviews.models import ReviewRequest
-from reviewboard.reviews.models import BaseComment, Review
+from reviewboard.reviews.models import BaseComment, Review, ReviewRequest
 from reviewboard.webapi.decorators import webapi_check_local_site
 from reviewboard.webapi.resources import WebAPIResource, \
                                          review_request_resource
